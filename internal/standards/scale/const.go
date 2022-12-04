@@ -1,0 +1,3 @@
+package scale
+
+const twelfthRoot2 = 1.0594630943592952645618252949463
