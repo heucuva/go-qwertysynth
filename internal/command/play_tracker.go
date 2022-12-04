@@ -52,18 +52,19 @@ type column struct {
 type row []column
 
 func trackerGenPattern(mach machine.Machine) []row {
+	_, o := mach.Default().CenterNote().KeyOctave().Split()
 	var (
-		g2 = mach.Note(2, keyoctave.KeyG, 0)
-		d3 = mach.Note(3, keyoctave.KeyD, 0)
-		c3 = mach.Note(3, keyoctave.KeyC, 0)
-		//c4 = mach.Note(4, keyoctave.KeyC, 0)
-		d4 = mach.Note(4, keyoctave.KeyD, 0)
-		e4 = mach.Note(4, keyoctave.KeyE, 0)
-		f4 = mach.Note(4, keyoctave.KeyF, 0)
-		g4 = mach.Note(4, keyoctave.KeyG, 0)
-		a4 = mach.Note(4, keyoctave.KeyA, 0)
-		b4 = mach.Note(4, keyoctave.KeyB, 0)
-		c5 = mach.Note(5, keyoctave.KeyC, 0)
+		g2 = mach.Note(o-2, keyoctave.KeyG, 0)
+		d3 = mach.Note(o-1, keyoctave.KeyD, 0)
+		c3 = mach.Note(o-1, keyoctave.KeyC, 0)
+		//c4 = mach.Note(o-1, keyoctave.KeyC, 0)
+		d4 = mach.Note(o, keyoctave.KeyD, 0)
+		e4 = mach.Note(o, keyoctave.KeyE, 0)
+		f4 = mach.Note(o, keyoctave.KeyF, 0)
+		g4 = mach.Note(o, keyoctave.KeyG, 0)
+		a4 = mach.Note(o, keyoctave.KeyA, 0)
+		b4 = mach.Note(o, keyoctave.KeyB, 0)
+		c5 = mach.Note(o+1, keyoctave.KeyC, 0)
 	)
 
 	var chopsticks []row
