@@ -31,6 +31,19 @@ For a Windows build, we recommend the following:
 For a non-Windows (e.g.: Linux) build, we recommend the following:
 * Ubuntu 20.04 (or newer) - we used Ubuntu 20.04.1 LTS running in WSL2
 * Go v1.18.1 (or newer)
+* The following libraries (versions listed are for Ubuntu 20.04):
+  * libxcursor-dev (1:1.2.0-2)
+  * libxi-dev (2:1.7.10-0ubuntu1)
+  * libxinerama-dev (2:1.1.4-2)
+  * libxrandr-dev (2:1.5.2-0ubuntu1)
+  * libxxf86vm-dev (1:1.1.4-1build1)
+  * libglfw3-dev (3.3.2-1)
+  * libx11-dev (2:1.6.9-2ubuntu1.2)
+  
+  On Ubuntu, you can get these libraries with this command:
+  ```bash
+  sudo apt install libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libglfw3-dev libxxf86vm-dev -y
+  ```
 
 ### How to build (on Windows)
 
