@@ -128,8 +128,8 @@ Supported synth machines:
 
 | Identifier | Name | Details |
 |----|----|----|
-| `xm` | FastTracker II | 64 semitones of 1.5625 cents per semitone between notes<br/>12 notes per octave |
-| `it` | Impulse Tracker| 64 semitones of 1.5625 cents per semitone between notes<br/>12 notes per octave |
+| `xm` | FastTracker II | 64 semitones of 1.5625 cents per semitone between notes<br/>12 notes per octave<br/>Central octave is 4 |
+| `it` | Impulse Tracker| 64 semitones of 1.5625 cents per semitone between notes<br/>12 notes per octave<br/>Central octave is 5 |
 
 ## Synth Mode
 
@@ -137,9 +137,9 @@ You can access this via the `play` command-line parameter. For more details abou
 
 Keyboard Legend:
 
-- `Q key`-row starts with C-5
-- `A key`-row starts with C-4
-- `Z key`-row starts with C-3
+- `Q key`-row starts with C-5 on XM and C-6 on IT
+- `A key`-row starts with C-4 on XM and C-5 on IT
+- `Z key`-row starts with C-3 on XM and C-4 on IT
   - Note: there are not enough keys present on this row to get a full octave, so key mappings for A# and B are unavailable.
 - `Escape` (`Esc`) to quit
 - `Page Up` (`Pg Up`) to increase keyboard octave
