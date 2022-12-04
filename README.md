@@ -14,15 +14,9 @@ This is a keyboard-operated synthesizer. It's not a very good one, at that.
     * WinMM (`WAVE_MAPPER` device)
     * DirectSound (via optional build flag: `directsound`)
     * PulseAudio (via optional build flag: `pulseaudio`) - NOTE: Not recommended except for WSL (Linux) builds!
-  * File
-    * Wave/RIFF file (built-in)
-    * Flac (via optional build flag: `flac`)
 * Linux
   * Sound Card
     * PulseAudio
-  * File
-    * Wave/RIFF file (built-in)
-    * Flac (via optional build flag: `flac`)
 
 ## How do I build this thing?
 
@@ -47,7 +41,7 @@ For a non-Windows (e.g.: Linux) build, we recommend the following:
    go mod download
    go build
    ```
-   When the command completes, you should now have the go-qwertysynth.exe file - run it with `.\go-qwertysynth play` to start!
+   When the command completes, you should now have the go-qwertysynth.exe file - run it with `.\go-qwertysynth.exe play` to start!
 
 ### How to build (on Linux)
 
