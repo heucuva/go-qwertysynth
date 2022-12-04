@@ -44,6 +44,7 @@ For a non-Windows (e.g.: Linux) build, we recommend the following:
   ```bash
   sudo apt install libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libglfw3-dev libxxf86vm-dev -y
   ```
+* On WSL2, we recommend using [VcXsrv 1.20.8.1](https://sourceforge.net/projects/vcxsrv/files/vcxsrv/1.20.8.1/).
 
 ### How to build (on Windows)
 
