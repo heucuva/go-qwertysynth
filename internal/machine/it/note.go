@@ -4,23 +4,24 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/heucuva/go-qwertysynth/internal/standards/keyoctave"
 	"github.com/heucuva/go-qwertysynth/internal/standards/note"
 	"github.com/heucuva/go-qwertysynth/internal/standards/scale"
+	"github.com/heucuva/go-qwertysynth/internal/standards/tuning"
+	equalTuning "github.com/heucuva/go-qwertysynth/internal/standards/tuning/equal"
 )
 
 type itNote int
 
-func (n itNote) Split() (keyoctave.Octave, keyoctave.Key, keyoctave.Semitone) {
-	ko := n / itSemitonesPerKey
-	o := keyoctave.Octave(ko) / keyoctave.Octave(keyoctave.KeysPerOctave)
-	k := keyoctave.Key(ko) % keyoctave.Key(keyoctave.KeysPerOctave)
-	s := keyoctave.Semitone(n) % itSemitonesPerKey
+func (n itNote) Split() (scale.Octave, scale.Key, scale.Microtone) {
+	ko := n / itMicrotonesPerKey
+	o := scale.Octave(ko) / scale.Octave(scale.KeysPerOctave)
+	k := scale.Key(ko) % scale.Key(scale.KeysPerOctave)
+	s := scale.Microtone(n) % itMicrotonesPerKey
 	return o, k, s
 }
 
-func (n itNote) KeyOctave() keyoctave.KeyOctave {
-	return keyoctave.KeyOctave(n) / itSemitonesPerKey
+func (n itNote) KeyOctave() scale.KeyOctave {
+	return scale.KeyOctave(n) / itMicrotonesPerKey
 }
 
 func (itNote) IsCut() bool {
@@ -31,8 +32,8 @@ func (itNote) IsFadeout() bool {
 	return false
 }
 
-func (n itNote) Semitones() keyoctave.Semitone {
-	return keyoctave.Semitone(n)
+func (n itNote) Microtones() scale.Microtone {
+	return scale.Microtone(n)
 }
 
 func (itNote) Kind() note.Kind {
@@ -49,25 +50,33 @@ func (n itNote) String() string {
 }
 
 const (
-	semitonesPerKey    float64 = itSemitonesPerKey
-	semitonesPerOctave float64 = float64(itSemitonesPerOctave)
-	totalOctaves       float64 = float64(keyoctave.NumOctaves)
-	totalSemitones     float64 = totalOctaves * semitonesPerOctave
-	divisorOctave      float64 = totalOctaves - itOctaveForBaseFrequency
-	divisorSemitone    float64 = divisorOctave * semitonesPerOctave
-	c5Freq             float64 = scale.A440_C4Frequency
+	microtonesPerKey    float64 = itMicrotonesPerKey
+	microtonesPerOctave float64 = float64(itMicrotonesPerOctave)
+	totalOctaves        float64 = float64(scale.NumOctaves)
+	totalMicrotones     float64 = totalOctaves * microtonesPerOctave
+	divisorOctave       float64 = totalOctaves - itOctaveForBaseFrequency
+	divisorMicrotone    float64 = divisorOctave * microtonesPerOctave
 )
 
-func (n itNote) ToFrequency() float64 {
-	semitones := float64(n)
-	period := totalSemitones - semitones
-	frequency := c5Freq * math.Pow(2.0, (divisorSemitone-period)/semitonesPerOctave)
+var (
+	defaultTuning = equalTuning.A440
+	baseNote      = Machine.Note(itOctaveForBaseFrequency, scale.KeyC, 0)
+)
+
+func (n itNote) ToFrequency(tuning tuning.Tuning) float64 {
+	if tuning == nil {
+		tuning = defaultTuning
+	}
+
+	o, k, m := n.Split()
+	frequency := tuning.ToFrequency(scale.NewKeyOctave(k, o-1)) *
+		math.Pow(2.0, float64(m)/microtonesPerOctave)
 	return frequency
 }
 
-func (n itNote) AddSemitones(s keyoctave.Semitone) note.Note {
+func (n itNote) AddMicrotones(s scale.Microtone) note.Note {
 	o, k, st := n.Split()
 	return itNote(s+st) +
-		itNote(k)*itSemitonesPerKey +
-		itNote(o)*itNote(itSemitonesPerOctave)
+		itNote(k)*itMicrotonesPerKey +
+		itNote(o)*itNote(itMicrotonesPerOctave)
 }

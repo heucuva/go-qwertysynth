@@ -18,6 +18,10 @@ import (
 	"github.com/heucuva/go-qwertysynth/internal/machine/xm"
 	"github.com/heucuva/go-qwertysynth/internal/output"
 	deviceCommon "github.com/heucuva/go-qwertysynth/internal/output/device/common"
+	"github.com/heucuva/go-qwertysynth/internal/standards/tuning"
+	equalTuning "github.com/heucuva/go-qwertysynth/internal/standards/tuning/equal"
+	harmonicTuning "github.com/heucuva/go-qwertysynth/internal/standards/tuning/harmonic"
+	pythagoreanTuning "github.com/heucuva/go-qwertysynth/internal/standards/tuning/pythagorean"
 	"github.com/heucuva/go-qwertysynth/internal/synth"
 	"github.com/heucuva/go-qwertysynth/internal/synth/envelope"
 	"github.com/heucuva/go-qwertysynth/internal/synth/keyboard"
@@ -41,6 +45,7 @@ var (
 	playTickLength time.Duration = time.Millisecond * 150
 
 	playMachineName string = "xm"
+	playTuningName  string = "default"
 
 	playAM string = "square,adsr:150ms:50ms:-6.2db:1s"
 	playFM string = "sine,adsr:1s:80ms:-12.75db:1s,frequency:1.125,amplitude:16"
@@ -59,6 +64,7 @@ func init() {
 	persistFlags.DurationVarP(&playTickLength, "tick", "T", playTickLength, "tick interval")
 	persistFlags.StringVarP(&playAM, "am", "a", playAM, "Amplitude Modulator settings")
 	persistFlags.StringVarP(&playFM, "fm", "f", playFM, "Frequency Modulator settings")
+	persistFlags.StringVar(&playTuningName, "tuning", playTuningName, "Tuning system to use")
 
 	rootCmd.AddCommand(playCmd)
 }
@@ -193,6 +199,42 @@ func playParseComponent(s string) (wavetable.Component, error) {
 	return comp, nil
 }
 
+func playGetTuning() tuning.Tuning {
+	switch strings.ToLower(playTuningName) {
+	case "equal-a415", "a415":
+		return equalTuning.A415
+	case "equal-a427", "a427":
+		return equalTuning.A427
+	case "equal-a428", "a428":
+		return equalTuning.A428
+	case "equal-a429", "a429":
+		return equalTuning.A429
+	case "equal-a430", "a430":
+		return equalTuning.A430
+	case "equal-a432", "a432":
+		return equalTuning.A432
+	case "equal-a435", "a435":
+		return equalTuning.A435
+	case "equal-a440", "a440":
+		return equalTuning.A440
+	case "equal-a444", "a444":
+		return equalTuning.A444
+	case "equal-a466", "a466":
+		return equalTuning.A466
+	case "equal-scientific", "scientific":
+		return equalTuning.Scientific
+
+	case "harmonic-just", "just":
+		return harmonicTuning.Just
+
+	case "pythagorean":
+		return pythagoreanTuning.Pythagorean
+
+	default:
+		return nil
+	}
+}
+
 func playSynth(mach machine.Machine, onTick synth.SynthTickFunc, showHelp bool) error {
 	var op wavetable.Operator
 	if am, err := playParseComponent(playAM); err != nil {
@@ -213,7 +255,7 @@ func playSynth(mach machine.Machine, onTick synth.SynthTickFunc, showHelp bool) 
 		}
 	}
 
-	wt, err := wavetable.Generate(mach, op)
+	wt, err := wavetable.Generate(mach, op, playGetTuning())
 	if err != nil {
 		panic(err)
 	}

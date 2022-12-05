@@ -1,18 +1,19 @@
 package note
 
 import (
-	"github.com/heucuva/go-qwertysynth/internal/standards/keyoctave"
 	"github.com/heucuva/go-qwertysynth/internal/standards/scale"
+	"github.com/heucuva/go-qwertysynth/internal/standards/tuning"
+	equalTuning "github.com/heucuva/go-qwertysynth/internal/standards/tuning/equal"
 )
 
 type baseNote struct{}
 
-func (baseNote) Split() (keyoctave.Octave, keyoctave.Key, keyoctave.Semitone) {
-	return 4, keyoctave.KeyA, 0
+func (baseNote) Split() (scale.Octave, scale.Key, scale.Microtone) {
+	return 4, scale.KeyA, 0
 }
 
-func (baseNote) KeyOctave() keyoctave.KeyOctave {
-	return keyoctave.NewKeyOctave(keyoctave.KeyA, 4)
+func (baseNote) KeyOctave() scale.KeyOctave {
+	return scale.NewKeyOctave(scale.KeyA, 4)
 }
 
 func (baseNote) IsCut() bool {
@@ -27,10 +28,13 @@ func (baseNote) Kind() Kind {
 	return special
 }
 
-func (baseNote) ToFrequency() float64 {
-	return scale.A440_A4Frequency
+func (baseNote) ToFrequency(tuning tuning.Tuning) float64 {
+	if tuning == nil {
+		tuning = equalTuning.A440
+	}
+	return tuning.ToFrequency(scale.NewKeyOctave(scale.KeyA, 4))
 }
 
-func (b baseNote) AddSemitones(s keyoctave.Semitone) Note {
+func (b baseNote) AddMicrotones(s scale.Microtone) Note {
 	return b
 }

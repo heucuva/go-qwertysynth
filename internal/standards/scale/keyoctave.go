@@ -1,4 +1,4 @@
-package keyoctave
+package scale
 
 type KeyOctave int
 

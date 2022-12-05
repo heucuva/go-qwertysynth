@@ -10,8 +10,8 @@ import (
 	"github.com/gotracker/gomixing/volume"
 	"github.com/heucuva/go-qwertysynth/internal/machine"
 	"github.com/heucuva/go-qwertysynth/internal/output/premix"
-	"github.com/heucuva/go-qwertysynth/internal/standards/keyoctave"
 	"github.com/heucuva/go-qwertysynth/internal/standards/note"
+	"github.com/heucuva/go-qwertysynth/internal/standards/scale"
 	"github.com/heucuva/go-qwertysynth/internal/synth/voice"
 	"github.com/heucuva/go-qwertysynth/internal/synth/wavetable"
 )
@@ -32,7 +32,7 @@ type Synth interface {
 	Close()
 	C() <-chan *premix.PremixData
 	Default() machine.Default
-	Note(o keyoctave.Octave, k keyoctave.Key, s keyoctave.Semitone) note.Note
+	Note(o scale.Octave, k scale.Key, s scale.Microtone) note.Note
 	KeyAction(n note.Note, a KeyAction)
 }
 
@@ -40,7 +40,7 @@ type synth struct {
 	tickInterval time.Duration
 
 	outCh   chan *premix.PremixData
-	state   map[keyoctave.KeyOctave]voice.Voice
+	state   map[scale.KeyOctave]voice.Voice
 	stateMu sync.RWMutex
 
 	bufLen     int
@@ -54,7 +54,7 @@ func NewSynth(tickInterval time.Duration, voices wavetable.WaveTable, numPremixB
 	s := &synth{
 		tickInterval: tickInterval,
 		outCh:        make(chan *premix.PremixData, numPremixBuffers),
-		state:        make(map[keyoctave.KeyOctave]voice.Voice),
+		state:        make(map[scale.KeyOctave]voice.Voice),
 		bufLen:       int(math.Ceil(sampleRate * tickInterval.Seconds())),
 		voices:       voices,
 		sampleRate:   sampleRate,
@@ -100,7 +100,7 @@ func (s *synth) Default() machine.Default {
 	return s.voices.Default()
 }
 
-func (s *synth) Note(o keyoctave.Octave, k keyoctave.Key, st keyoctave.Semitone) note.Note {
+func (s *synth) Note(o scale.Octave, k scale.Key, st scale.Microtone) note.Note {
 	return s.voices.Note(o, k, st)
 }
 
@@ -157,7 +157,7 @@ func (s *synth) processBuffer() {
 	s.stateMu.Lock()
 	defer s.stateMu.Unlock()
 
-	nextState := make(map[keyoctave.KeyOctave]voice.Voice)
+	nextState := make(map[scale.KeyOctave]voice.Voice)
 	state := s.state
 	s.state = nextState
 

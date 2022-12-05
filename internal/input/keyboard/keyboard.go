@@ -14,8 +14,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	rkeyboard "github.com/heucuva/go-qwertysynth/internal/input/keyboard/resources/images/keyboard"
-	"github.com/heucuva/go-qwertysynth/internal/standards/keyoctave"
 	"github.com/heucuva/go-qwertysynth/internal/standards/note"
+	"github.com/heucuva/go-qwertysynth/internal/standards/scale"
 	"github.com/heucuva/go-qwertysynth/internal/synth"
 )
 
@@ -25,7 +25,7 @@ var (
 
 type Keyboard struct {
 	keys          []ebiten.Key
-	currentOctave keyoctave.Octave
+	currentOctave scale.Octave
 	lastTick      time.Time
 	wantStop      bool
 	onTick        TickFunc
@@ -66,13 +66,13 @@ func NewKeyboard(ctx context.Context, s synth.Synth, onTick TickFunc, showHelp b
 }
 
 func (g Keyboard) showHelp() {
-	qRowNote := g.s.Note(g.currentOctave+1, keyoctave.KeyC, 0)
+	qRowNote := g.s.Note(g.currentOctave+1, scale.KeyC, 0)
 	fmt.Printf("Q-row starts with %v\n", qRowNote)
 
-	aRowNote := g.s.Note(g.currentOctave, keyoctave.KeyC, 0)
+	aRowNote := g.s.Note(g.currentOctave, scale.KeyC, 0)
 	fmt.Printf("A-row starts with %v\n", aRowNote)
 
-	zRowNote := g.s.Note(g.currentOctave-1, keyoctave.KeyC, 0)
+	zRowNote := g.s.Note(g.currentOctave-1, scale.KeyC, 0)
 	fmt.Printf("Z-row starts with %v\n", zRowNote)
 
 	fmt.Println()
@@ -100,12 +100,12 @@ func (g *Keyboard) KeyCut(n note.Note) {
 	g.s.KeyAction(n, synth.KeyActionCut)
 }
 
-func (g *Keyboard) SetCurrentOctave(o keyoctave.Octave) {
-	if o > keyoctave.MaxOctave-1 {
-		o = keyoctave.MaxOctave - 1
+func (g *Keyboard) SetCurrentOctave(o scale.Octave) {
+	if o > scale.MaxOctave-1 {
+		o = scale.MaxOctave - 1
 	}
-	if o < keyoctave.MinOctave+1 {
-		o = keyoctave.MinOctave + 1
+	if o < scale.MinOctave+1 {
+		o = scale.MinOctave + 1
 	}
 	g.currentOctave = o
 	fmt.Printf("A-row octave: %d\n", g.currentOctave)

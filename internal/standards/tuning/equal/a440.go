@@ -1,9 +1,10 @@
-package scale
+package equal
 
 import (
 	"math"
 
-	"github.com/heucuva/go-qwertysynth/internal/standards/keyoctave"
+	"github.com/heucuva/go-qwertysynth/internal/standards/scale"
+	"github.com/heucuva/go-qwertysynth/internal/standards/tuning"
 )
 
 const (
@@ -23,9 +24,9 @@ const (
 
 type a440 struct{}
 
-var A440 Scale = &a440{}
+var A440 tuning.Tuning = &a440{}
 
-var a440_scale = [keyoctave.KeysPerOctave]float64{
+var a440_scale = [scale.KeysPerOctave]float64{
 	A440_C4Frequency,
 	A440_CSharp4Frequency,
 	A440_D4Frequency,
@@ -40,7 +41,7 @@ var a440_scale = [keyoctave.KeysPerOctave]float64{
 	A440_B4Frequency,
 }
 
-func (a440) ToFrequency(ko keyoctave.KeyOctave) float64 {
+func (a440) ToFrequency(ko scale.KeyOctave) float64 {
 	k, o := ko.Split()
 	freq := a440_scale[int(k)]
 	freq *= math.Pow(2.0, float64(o)-4.0)

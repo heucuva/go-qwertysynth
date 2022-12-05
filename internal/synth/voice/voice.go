@@ -3,8 +3,9 @@ package voice
 import (
 	"time"
 
-	"github.com/heucuva/go-qwertysynth/internal/standards/keyoctave"
 	"github.com/heucuva/go-qwertysynth/internal/standards/note"
+	"github.com/heucuva/go-qwertysynth/internal/standards/scale"
+	"github.com/heucuva/go-qwertysynth/internal/standards/tuning"
 	"github.com/heucuva/go-qwertysynth/internal/synth/envelope"
 	"github.com/heucuva/go-qwertysynth/internal/synth/pwm"
 )
@@ -94,9 +95,10 @@ type voice struct {
 	fm       voiceOp
 	baseNote note.Note
 	curNote  note.Note
+	tuning   tuning.Tuning
 }
 
-func NewVoice(mod pwm.Modulator, env envelope.Envelope, base note.Note) Voice {
+func NewVoice(mod pwm.Modulator, env envelope.Envelope, base note.Note, tuning tuning.Tuning) Voice {
 	return &voice{
 		am: voiceOp{
 			mod: mod,
@@ -104,6 +106,7 @@ func NewVoice(mod pwm.Modulator, env envelope.Envelope, base note.Note) Voice {
 		},
 		baseNote: base,
 		curNote:  base,
+		tuning:   tuning,
 	}
 }
 
@@ -119,8 +122,8 @@ func (v *voice) SetNote(n note.Note) {
 
 func (v *voice) setNoteRatio(n note.Note) {
 	var ratio float64
-	if f0 := v.baseNote.ToFrequency(); f0 != 0 {
-		ratio = n.ToFrequency() / f0
+	if f0 := v.baseNote.ToFrequency(v.tuning); f0 != 0 {
+		ratio = n.ToFrequency(v.tuning) / f0
 	}
 	v.am.SetNoteRatio(ratio)
 }
@@ -140,7 +143,7 @@ func (v voice) IsPlaying() bool {
 func (v *voice) Advance(amt time.Duration) {
 	mod, used := v.fm.Get()
 	if used {
-		n := v.curNote.AddSemitones(keyoctave.Semitone(mod))
+		n := v.curNote.AddMicrotones(scale.Microtone(mod))
 		v.setNoteRatio(n)
 	}
 

@@ -1,14 +1,17 @@
 package note
 
-import "github.com/heucuva/go-qwertysynth/internal/standards/keyoctave"
+import (
+	"github.com/heucuva/go-qwertysynth/internal/standards/scale"
+	"github.com/heucuva/go-qwertysynth/internal/standards/tuning"
+)
 
 type fadeout struct{}
 
-func (fadeout) Split() (keyoctave.Octave, keyoctave.Key, keyoctave.Semitone) {
+func (fadeout) Split() (scale.Octave, scale.Key, scale.Microtone) {
 	return 0, 0, 0
 }
 
-func (fadeout) KeyOctave() keyoctave.KeyOctave {
+func (fadeout) KeyOctave() scale.KeyOctave {
 	return 0
 }
 
@@ -24,10 +27,10 @@ func (fadeout) Kind() Kind {
 	return special
 }
 
-func (fadeout) ToFrequency() float64 {
+func (fadeout) ToFrequency(tuning tuning.Tuning) float64 {
 	return 0.0
 }
 
-func (f fadeout) AddSemitones(s keyoctave.Semitone) Note {
+func (f fadeout) AddMicrotones(s scale.Microtone) Note {
 	return f
 }

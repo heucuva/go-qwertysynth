@@ -2,8 +2,9 @@ package wavetable
 
 import (
 	"github.com/heucuva/go-qwertysynth/internal/machine"
-	"github.com/heucuva/go-qwertysynth/internal/standards/keyoctave"
 	"github.com/heucuva/go-qwertysynth/internal/standards/note"
+	"github.com/heucuva/go-qwertysynth/internal/standards/scale"
+	"github.com/heucuva/go-qwertysynth/internal/standards/tuning"
 	"github.com/heucuva/go-qwertysynth/internal/synth/envelope"
 	"github.com/heucuva/go-qwertysynth/internal/synth/pwm"
 	"github.com/heucuva/go-qwertysynth/internal/synth/voice"
@@ -31,11 +32,12 @@ type Item struct {
 	AM       Op
 	FM       Op
 	BaseNote note.Note
+	Tuning   tuning.Tuning
 }
 
 func (i Item) Voice() voice.Voice {
 	env := envelope.NewADSR(i.AM.Envelope)
-	v := voice.NewVoice(pwm.NewModulator(i.AM.Wave, i.AM.Wave.SampleRate()), env, i.BaseNote)
+	v := voice.NewVoice(pwm.NewModulator(i.AM.Wave, i.AM.Wave.SampleRate()), env, i.BaseNote, i.Tuning)
 	if i.FM.Wave != nil {
 		env := envelope.NewADSR(i.FM.Envelope)
 		v.SetFM(pwm.NewModulator(i.FM.Wave, i.FM.Wave.SampleRate()), env)
@@ -43,15 +45,19 @@ func (i Item) Voice() voice.Voice {
 	return v
 }
 
-func Generate(mach machine.Machine, op Operator) ([]*Item, error) {
-	am, err := mach.Generate(op.Amplitude.Generator, op.Amplitude.Options...)
+func Generate(mach machine.Machine, op Operator, tuning tuning.Tuning) ([]*Item, error) {
+	if tuning == nil {
+		tuning = mach.Default().Tuning()
+	}
+
+	am, err := mach.Generate(tuning, op.Amplitude.Generator, op.Amplitude.Options...)
 	if err != nil {
 		return nil, errors.Wrap(err, "amplitude modulator")
 	}
 
 	var fm wave.Wave
 	if op.Frequency.Generator != nil {
-		fm, err = mach.Generate(op.Frequency.Generator, op.Frequency.Options...)
+		fm, err = mach.Generate(tuning, op.Frequency.Generator, op.Frequency.Options...)
 		if err != nil {
 			return nil, errors.Wrap(err, "frequency modulator")
 		}
@@ -67,11 +73,12 @@ func Generate(mach machine.Machine, op Operator) ([]*Item, error) {
 			Envelope: op.Frequency.Envelope,
 		},
 		BaseNote: mach.Default().CenterNote(),
+		Tuning:   tuning,
 	}
 
-	t := make([]*Item, 0, keyoctave.TotalKeyOctaves)
-	for o := keyoctave.MinOctave; o <= keyoctave.MaxOctave; o++ {
-		for k := keyoctave.MinKey; k <= keyoctave.MaxKey; k++ {
+	t := make([]*Item, 0, scale.TotalKeyOctaves)
+	for o := scale.MinOctave; o <= scale.MaxOctave; o++ {
+		for k := scale.MinKey; k <= scale.MaxKey; k++ {
 			t = append(t, it)
 		}
 	}

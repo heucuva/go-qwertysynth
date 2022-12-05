@@ -1,15 +1,18 @@
 package note
 
-import "github.com/heucuva/go-qwertysynth/internal/standards/keyoctave"
+import (
+	"github.com/heucuva/go-qwertysynth/internal/standards/scale"
+	"github.com/heucuva/go-qwertysynth/internal/standards/tuning"
+)
 
 type Note interface {
-	Split() (keyoctave.Octave, keyoctave.Key, keyoctave.Semitone)
-	KeyOctave() keyoctave.KeyOctave
+	Split() (scale.Octave, scale.Key, scale.Microtone)
+	KeyOctave() scale.KeyOctave
 	IsCut() bool
 	IsFadeout() bool
 	Kind() Kind
-	ToFrequency() float64
-	AddSemitones(s keyoctave.Semitone) Note
+	ToFrequency(tuning tuning.Tuning) float64
+	AddMicrotones(s scale.Microtone) Note
 }
 
 var (

@@ -1,4 +1,4 @@
-package keyoctave
+package scale
 
 const (
 	MinOctave     Octave = 0

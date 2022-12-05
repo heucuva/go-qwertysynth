@@ -1,16 +1,16 @@
 package note
 
-import "github.com/heucuva/go-qwertysynth/internal/standards/keyoctave"
+import "github.com/heucuva/go-qwertysynth/internal/standards/scale"
 
 type Kind interface {
-	Note(octave keyoctave.Octave, key keyoctave.Key, semitone keyoctave.Semitone) Note
+	Note(octave scale.Octave, key scale.Key, microtone scale.Microtone) Note
 	BaseFrequency() float64
 	CenterNote() Note
 }
 
 type specialKind struct{}
 
-func (specialKind) Note(o keyoctave.Octave, k keyoctave.Key, s keyoctave.Semitone) Note {
+func (specialKind) Note(o scale.Octave, k scale.Key, s scale.Microtone) Note {
 	return None
 }
 

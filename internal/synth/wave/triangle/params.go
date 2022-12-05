@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/heucuva/go-qwertysynth/internal/standards/metric"
-	"github.com/heucuva/go-qwertysynth/internal/standards/scale"
+	equalTuning "github.com/heucuva/go-qwertysynth/internal/standards/tuning/equal"
 	"github.com/heucuva/go-qwertysynth/internal/synth/wave"
 	"github.com/pkg/errors"
 )
@@ -58,7 +58,7 @@ func (s *settings) SetParameterByName(name string, value any) error {
 const (
 	defaultAmp                       = 1.0
 	defaultPhase      metric.Radians = 0.0
-	defaultFrequency                 = scale.A440_A4Frequency
+	defaultFrequency                 = equalTuning.A440_A4Frequency
 	defaultSampleRate                = 48000
 	defaultDuration   time.Duration  = 0
 )

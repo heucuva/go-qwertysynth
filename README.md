@@ -108,7 +108,7 @@ Parameters:
 | Identifier | Name | Default | Notes |
 |----|----|----|----|
 | `frequency`<br/>`freq`<br/>`f` | Frequency | C-4 | C-4 = `261.626 Hz`, usually, but depends on configured scale for synth machine used |
-| `amplitude`<br/>`amp`<br/>`a` | Amplitude | 1.0 | For amplitude modulator, this is full volume<br/><br/>For frequency modulator, this is 1 full note semitone that the synth machine understands |
+| `amplitude`<br/>`amp`<br/>`a` | Amplitude | 1.0 | For amplitude modulator, this is full volume<br/><br/>For frequency modulator, this is 1 full note microtone that the synth machine understands |
 
 ## Envelope
 
@@ -116,9 +116,9 @@ Envelopes are based on a simple ADSR mechanism. See [Waveform Configuration](#wa
 
 ## FM Modulation
 
-When configured (_i.e._: the waveform configuration is not empty or blank), a waveform will be applied to an amplitude modulator waveform as a note semitone (`Semitone`) value.
+When configured (_i.e._: the waveform configuration is not empty or blank), a waveform will be applied to an amplitude modulator waveform as a note microtone (`Microtone`) value.
 
-Semitones are synth machine specific implementations, but are usually defined as rational mini-steps between notes.
+Microtones are synth machine specific implementations, but are usually defined as rational mini-steps between notes.
 
 ## Synth Machines
 
@@ -128,8 +128,8 @@ Supported synth machines:
 
 | Identifier | Name | Details |
 |----|----|----|
-| `xm` | FastTracker II | 64 semitones of 1.5625 cents per semitone between notes<br/>12 notes per octave<br/>Central octave is 4 |
-| `it` | Impulse Tracker| 64 semitones of 1.5625 cents per semitone between notes<br/>12 notes per octave<br/>Central octave is 5 |
+| `xm` | FastTracker II | 64 microtones of 1.5625 cents per microtone between notes<br/>12 notes per octave<br/>Central octave is 4 |
+| `it` | Impulse Tracker| 64 microtones of 1.5625 cents per microtone between notes<br/>12 notes per octave<br/>Central octave is 5 |
 
 ## Synth Mode
 

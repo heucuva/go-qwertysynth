@@ -2,8 +2,9 @@ package xm
 
 import (
 	"github.com/heucuva/go-qwertysynth/internal/machine"
-	"github.com/heucuva/go-qwertysynth/internal/standards/keyoctave"
 	"github.com/heucuva/go-qwertysynth/internal/standards/note"
+	"github.com/heucuva/go-qwertysynth/internal/standards/scale"
+	"github.com/heucuva/go-qwertysynth/internal/standards/tuning"
 	"github.com/heucuva/go-qwertysynth/internal/synth/wave"
 )
 
@@ -19,23 +20,27 @@ func (xmMachine) WaveformFrequency() float64 {
 	return xmBaseFrequency
 }
 
-func (xmMachine) Generate(generator wave.Generator, opts ...wave.GeneratorParam) (wave.Wave, error) {
+func (xmMachine) Generate(tuning tuning.Tuning, generator wave.Generator, opts ...wave.GeneratorParam) (wave.Wave, error) {
 	var machineOpts []wave.GeneratorParam
 	machineOpts = append(machineOpts,
-		wave.SetParameterByName("frequency", c4Freq),
+		wave.SetParameterByName("frequency", baseNote.ToFrequency(tuning)),
 		wave.SetParameterByName("sampleRate", xmBaseFrequency),
 	)
 	return generator(append(machineOpts, opts...)...)
 }
 
+func (xmMachine) Tuning() tuning.Tuning {
+	return defaultTuning
+}
+
 const (
-	xmSemitonesPerKey        = 64
+	xmMicrotonesPerKey       = 64
 	xmMinOctave              = 1
 	xmMaxOctave              = 8
-	xmSemitonesPerOctave     = xmSemitonesPerKey * keyoctave.KeysPerOctave
+	xmMicrotonesPerOctave    = xmMicrotonesPerKey * scale.KeysPerOctave
 	xmTotalOctaves           = xmMaxOctave - xmMinOctave + 1
-	xmMaxSemitones           = xmSemitonesPerOctave * xmTotalOctaves
-	xmMinSemitone            = 0
+	xmMaxMicrotones          = xmMicrotonesPerOctave * xmTotalOctaves
+	xmMinMicrotone           = 0
 	xmBaseFrequency          = 8363.0
 	xmOctaveForBaseFrequency = 4
 )
@@ -46,8 +51,8 @@ func (xmMachine) NoteFromChannelData(d uint8) (note.Note, error) {
 		return note.None, nil
 	case d >= 1 && d <= 96:
 		v := d - 1
-		o := xmMinOctave + keyoctave.Octave(v/uint8(keyoctave.KeysPerOctave))
-		k := keyoctave.MinKey + keyoctave.Key(v%uint8(keyoctave.KeysPerOctave))
+		o := xmMinOctave + scale.Octave(v/uint8(scale.KeysPerOctave))
+		k := scale.MinKey + scale.Key(v%uint8(scale.KeysPerOctave))
 		return Machine.Note(o, k, 0), nil
 	case d == 97:
 		return note.Cut, nil
@@ -56,10 +61,10 @@ func (xmMachine) NoteFromChannelData(d uint8) (note.Note, error) {
 	}
 }
 
-func (xmMachine) Note(o keyoctave.Octave, k keyoctave.Key, s keyoctave.Semitone) note.Note {
+func (xmMachine) Note(o scale.Octave, k scale.Key, s scale.Microtone) note.Note {
 	return xmNote(s) +
-		xmNote(k)*xmSemitonesPerKey +
-		xmNote(o)*xmNote(xmSemitonesPerOctave)
+		xmNote(k)*xmMicrotonesPerKey +
+		xmNote(o)*xmNote(xmMicrotonesPerOctave)
 }
 
 func (xmMachine) BaseFrequency() float64 {
@@ -67,5 +72,5 @@ func (xmMachine) BaseFrequency() float64 {
 }
 
 func (xmMachine) CenterNote() note.Note {
-	return Machine.Note(xmOctaveForBaseFrequency, keyoctave.KeyC, 0)
+	return Machine.Note(xmOctaveForBaseFrequency, scale.KeyC, 0)
 }
