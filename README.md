@@ -155,7 +155,7 @@ Synth machines can also be configured with a tuning system. Available tuning sys
 
 You can access this via the `play` command-line parameter. For more details about settings of this mode, add the `--help` command-line parameter.
 
-Keyboard Legend:
+Keyboard Legend (for Twelve-tone intonations):
 
 - `Q key`-row starts with C-5 on XM and C-6 on IT
 - `A key`-row starts with C-4 on XM and C-5 on IT
