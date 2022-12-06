@@ -26,7 +26,7 @@ type a466 struct{}
 
 var A466 tuning.Tuning = &a466{}
 
-var a466_scale = [scale.KeysPerOctave]float64{
+var a466_scale = [TwelveKeysPerOctave]float64{
 	A466_C4Frequency,
 	A466_CSharp4Frequency,
 	A466_D4Frequency,
@@ -41,9 +41,21 @@ var a466_scale = [scale.KeysPerOctave]float64{
 	A466_B4Frequency,
 }
 
-func (a466) ToFrequency(ko scale.KeyOctave) float64 {
-	k, o := ko.Split()
-	freq := a466_scale[int(k)]
+func (a466) ToFrequency(ko tuning.KeyOctave) float64 {
+	k, o := ko.Split(A466)
+	freq := a466_scale[k.Index()]
 	freq *= math.Pow(2.0, float64(o)-4.0)
 	return freq
+}
+
+func (a466) Key(index int) scale.Key {
+	return TwelveKey(index)
+}
+
+func (a466) BaseKey() (scale.Key, scale.Octave) {
+	return TwelveKeyA, 4
+}
+
+func (a466) KeysPerOctave() int {
+	return TwelveKeysPerOctave
 }

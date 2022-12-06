@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate go run gen.go
+//go:generate go run resources/twelve/gen.go
+//go:generate go run resources/fiftythree/gen.go
 //go:generate gofmt -s -w .
 
 package keyboard

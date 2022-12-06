@@ -47,8 +47,8 @@ func (t keyboard) Get(n note.Note) voice.Voice {
 	return v
 }
 
-func (t keyboard) Default() machine.Default {
-	return t.mach.Default()
+func (t keyboard) Machine() machine.Machine {
+	return t.mach
 }
 
 func (t keyboard) Note(o scale.Octave, k scale.Key, s scale.Microtone) note.Note {

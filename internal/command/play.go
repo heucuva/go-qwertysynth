@@ -20,8 +20,7 @@ import (
 	deviceCommon "github.com/heucuva/go-qwertysynth/internal/output/device/common"
 	"github.com/heucuva/go-qwertysynth/internal/standards/tuning"
 	equalTuning "github.com/heucuva/go-qwertysynth/internal/standards/tuning/equal"
-	harmonicTuning "github.com/heucuva/go-qwertysynth/internal/standards/tuning/harmonic"
-	pythagoreanTuning "github.com/heucuva/go-qwertysynth/internal/standards/tuning/pythagorean"
+	justTuning "github.com/heucuva/go-qwertysynth/internal/standards/tuning/just"
 	"github.com/heucuva/go-qwertysynth/internal/synth"
 	"github.com/heucuva/go-qwertysynth/internal/synth/envelope"
 	"github.com/heucuva/go-qwertysynth/internal/synth/keyboard"
@@ -80,13 +79,14 @@ var playCmd = &cobra.Command{
 }
 
 func playGetMachine() machine.Machine {
+	tuning := playGetTuning()
 	switch strings.ToLower(playMachineName) {
 	case "it":
-		return it.Machine
+		return it.Machine(tuning)
 	case "xm":
 		fallthrough
 	default:
-		return xm.Machine
+		return xm.Machine(tuning)
 	}
 }
 
@@ -223,12 +223,13 @@ func playGetTuning() tuning.Tuning {
 		return equalTuning.A466
 	case "equal-scientific", "scientific":
 		return equalTuning.Scientific
+	case "equal-53", "53tet", "53":
+		return equalTuning.FiftyThree
 
-	case "harmonic-just", "just":
-		return harmonicTuning.Just
-
-	case "pythagorean":
-		return pythagoreanTuning.Pythagorean
+	case "just-harmonic", "harmonic":
+		return justTuning.Harmonic
+	case "just-pythagorean", "pythagorean":
+		return justTuning.Pythagorean
 
 	default:
 		return nil
@@ -255,11 +256,11 @@ func playSynth(mach machine.Machine, onTick synth.SynthTickFunc, showHelp bool) 
 		}
 	}
 
-	wt, err := wavetable.Generate(mach, op, playGetTuning())
+	wt, err := wavetable.Generate(mach, op)
 	if err != nil {
 		panic(err)
 	}
-	voices := keyboard.NewKeyboard(mach, keymap.Default, wt)
+	voices := keyboard.NewKeyboard(mach, keymap.Default(mach.Tuning()), wt)
 
 	out, err := output.CreateOutputDevice(deviceCommon.Settings{
 		Name:             output.DefaultOutputDeviceName,

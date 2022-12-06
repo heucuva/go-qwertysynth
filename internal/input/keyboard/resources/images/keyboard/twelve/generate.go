@@ -12,6 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:generate go run ../../file2byteslice/cmd/file2byteslice/main.go -input keyboard.png -output keyboard.go -package keyboard -var Keyboard_png
+//go:generate go run ../../../file2byteslice/cmd/file2byteslice/main.go -input keyboard.png -output keyboard.go -package twelve -var Keyboard_png
 
-package keyboard
+package twelve

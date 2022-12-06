@@ -26,7 +26,7 @@ type a435 struct{}
 
 var A435 tuning.Tuning = &a435{}
 
-var a435_scale = [scale.KeysPerOctave]float64{
+var a435_scale = [TwelveKeysPerOctave]float64{
 	A435_C4Frequency,
 	A435_CSharp4Frequency,
 	A435_D4Frequency,
@@ -41,9 +41,21 @@ var a435_scale = [scale.KeysPerOctave]float64{
 	A435_B4Frequency,
 }
 
-func (a435) ToFrequency(ko scale.KeyOctave) float64 {
-	k, o := ko.Split()
-	freq := a435_scale[int(k)]
+func (a435) ToFrequency(ko tuning.KeyOctave) float64 {
+	k, o := ko.Split(A435)
+	freq := a435_scale[k.Index()]
 	freq *= math.Pow(2.0, float64(o)-4.0)
 	return freq
+}
+
+func (a435) Key(index int) scale.Key {
+	return TwelveKey(index)
+}
+
+func (a435) BaseKey() (scale.Key, scale.Octave) {
+	return TwelveKeyA, 4
+}
+
+func (a435) KeysPerOctave() int {
+	return TwelveKeysPerOctave
 }

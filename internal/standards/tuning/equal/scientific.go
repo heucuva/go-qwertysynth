@@ -26,7 +26,7 @@ type scientific struct{}
 
 var Scientific tuning.Tuning = &scientific{}
 
-var scientific_scale = [scale.KeysPerOctave]float64{
+var scientific_scale = [TwelveKeysPerOctave]float64{
 	Scientific_C4Frequency,
 	Scientific_CSharp4Frequency,
 	Scientific_D4Frequency,
@@ -41,9 +41,21 @@ var scientific_scale = [scale.KeysPerOctave]float64{
 	Scientific_B4Frequency,
 }
 
-func (scientific) ToFrequency(ko scale.KeyOctave) float64 {
-	k, o := ko.Split()
-	freq := scientific_scale[int(k)]
+func (scientific) ToFrequency(ko tuning.KeyOctave) float64 {
+	k, o := ko.Split(Scientific)
+	freq := scientific_scale[k.Index()]
 	freq *= math.Pow(2.0, float64(o)-4.0)
 	return freq
+}
+
+func (scientific) Key(index int) scale.Key {
+	return TwelveKey(index)
+}
+
+func (scientific) BaseKey() (scale.Key, scale.Octave) {
+	return TwelveKeyA, 4
+}
+
+func (scientific) KeysPerOctave() int {
+	return TwelveKeysPerOctave
 }

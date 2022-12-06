@@ -7,21 +7,34 @@ import (
 	"github.com/heucuva/go-qwertysynth/internal/standards/note"
 	"github.com/heucuva/go-qwertysynth/internal/standards/scale"
 	"github.com/heucuva/go-qwertysynth/internal/standards/tuning"
+	tuningPkg "github.com/heucuva/go-qwertysynth/internal/standards/tuning"
 	equalTuning "github.com/heucuva/go-qwertysynth/internal/standards/tuning/equal"
 )
 
-type xmNote int
+type xmNote struct {
+	oks    int
+	tuning tuningPkg.Tuning
+}
 
 func (n xmNote) Split() (scale.Octave, scale.Key, scale.Microtone) {
-	ko := n / xmMicrotonesPerKey
-	o := scale.Octave(ko) / scale.Octave(scale.KeysPerOctave)
-	k := scale.Key(ko) % scale.Key(scale.KeysPerOctave)
-	s := scale.Microtone(n) % xmMicrotonesPerKey
+	o, k, s := n.split()
+	return scale.Octave(o), n.tuning.Key(k), scale.Microtone(s)
+}
+
+func (n xmNote) split() (int, int, int) {
+	keysPerOctave := n.tuning.KeysPerOctave()
+	ko := int(n.oks) / xmMicrotonesPerKey
+	o := ko / keysPerOctave
+	k := ko % keysPerOctave
+	s := int(n.oks) % xmMicrotonesPerKey
 	return o, k, s
 }
 
-func (n xmNote) KeyOctave() scale.KeyOctave {
-	return scale.KeyOctave(n) / xmMicrotonesPerKey
+func (n xmNote) KeyOctave() tuningPkg.KeyOctave {
+	o, k, _ := n.split()
+	ko := tuningPkg.KeyOctave(k) |
+		tuning.KeyOctave(o)<<8
+	return ko
 }
 
 func (xmNote) IsCut() bool {
@@ -33,11 +46,11 @@ func (xmNote) IsFadeout() bool {
 }
 
 func (n xmNote) Microtones() scale.Microtone {
-	return scale.Microtone(n)
+	return scale.Microtone(n.oks)
 }
 
 func (xmNote) Kind() note.Kind {
-	return Machine
+	return Machine(defaultTuning)
 }
 
 func (n xmNote) String() string {
@@ -60,23 +73,20 @@ const (
 
 var (
 	defaultTuning = equalTuning.A440
-	baseNote      = Machine.Note(xmOctaveForBaseFrequency, scale.KeyC, 0)
 )
 
-func (n xmNote) ToFrequency(tuning tuning.Tuning) float64 {
-	if tuning == nil {
-		tuning = defaultTuning
-	}
-
-	o, k, m := n.Split()
-	frequency := tuning.ToFrequency(scale.NewKeyOctave(k, o)) *
+func (n xmNote) ToFrequency() float64 {
+	_, _, m := n.split()
+	frequency := n.tuning.ToFrequency(n.KeyOctave()) *
 		math.Pow(2.0, float64(m)/microtonesPerOctave)
 	return frequency
 }
 
 func (n xmNote) AddMicrotones(s scale.Microtone) note.Note {
-	o, k, st := n.Split()
-	return xmNote(s+st) +
-		xmNote(k)*xmMicrotonesPerKey +
-		xmNote(o)*xmNote(xmMicrotonesPerOctave)
+	_, _, st := n.split()
+	n.oks -= st + int(s)
+	if n.oks < 0 {
+		n.oks = 0
+	}
+	return n
 }

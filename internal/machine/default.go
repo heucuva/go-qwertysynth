@@ -7,6 +7,6 @@ import (
 
 type Default interface {
 	WaveformFrequency() float64
-	CenterNote() note.Note
+	BaseNote() note.Note
 	Tuning() tuning.Tuning
 }

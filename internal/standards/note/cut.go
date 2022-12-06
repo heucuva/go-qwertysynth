@@ -8,10 +8,10 @@ import (
 type cut struct{}
 
 func (cut) Split() (scale.Octave, scale.Key, scale.Microtone) {
-	return 0, 0, 0
+	return 0, nil, 0
 }
 
-func (cut) KeyOctave() scale.KeyOctave {
+func (cut) KeyOctave() tuning.KeyOctave {
 	return 0
 }
 
@@ -27,10 +27,10 @@ func (cut) Kind() Kind {
 	return special
 }
 
-func (cut) ToFrequency(tuning tuning.Tuning) float64 {
+func (cut) ToFrequency() float64 {
 	return 0.0
 }
 
-func (c cut) AddMicrotones(s scale.Microtone) Note {
-	return c
+func (cut) AddMicrotones(s scale.Microtone) Note {
+	return Cut
 }

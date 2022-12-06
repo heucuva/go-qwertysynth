@@ -128,8 +128,28 @@ Supported synth machines:
 
 | Identifier | Name | Details |
 |----|----|----|
-| `xm` | FastTracker II | 64 microtones of 1.5625 cents per microtone between notes<br/>12 notes per octave<br/>Central octave is 4 |
-| `it` | Impulse Tracker| 64 microtones of 1.5625 cents per microtone between notes<br/>12 notes per octave<br/>Central octave is 5 |
+| `xm` | FastTracker II | 64 microtones of 1.5625 cents per microtone between notes<br/>12 notes per octave<br/>Central octave is 4<br/>A440 (equal) tuning |
+| `it` | Impulse Tracker| 64 microtones of 1.5625 cents per microtone between notes<br/>12 notes per octave<br/>Central octave is 5<br/>A440 (equal) tuning |
+
+Synth machines can also be configured with a tuning system. Available tuning systems include:
+
+| Identifier | Name | Details |
+|----|----|----|
+| `default` | | Use the default value specified by the machine |
+| `equal-A415`<br/>`A415` | A415 (equal) | A-4 is identified to be exactly 415.0 Hz<br/>[Twelve-tone equal temperament](https://en.wikipedia.org/wiki/12_equal_temperament) |
+| `equal-A427`<br/>`A427` | A427 (equal) | A-4 is identified to be exactly 427.0 Hz<br/>Twelve-tone equal temperament |
+| `equal-A428`<br/>`A428` | A428 (equal) | A-4 is identified to be exactly 428.0 Hz<br/>Twelve-tone equal temperament |
+| `equal-A429`<br/>`A429` | A429 (equal) | A-4 is identified to be exactly 429.0 Hz<br/>Twelve-tone equal temperament |
+| `equal-A430`<br/>`A430` | A430 (equal) | A-4 is identified to be exactly 430.0 Hz<br/>Twelve-tone equal temperament |
+| `equal-A432`<br/>`A432` | A432 (equal) | A-4 is identified to be exactly 432.0 Hz<br/>Twelve-tone equal temperament |
+| `equal-A435`<br/>`A435` | A435 (equal) | A-4 is identified to be exactly 435.0 Hz<br/>Twelve-tone equal temperament |
+| `equal-A440`<br/>`A440` | A440 (equal) | A-4 is identified to be exactly 440.0 Hz<br/>Twelve-tone equal temperament |
+| `equal-A444`<br/>`A444` | A444 (equal) | A-4 is identified to be exactly 444.0 Hz<br/>Twelve-tone equal temperament |
+| `equal-A466`<br/>`A466` | A466 (equal) | A-4 is identified to be exactly 466.0 Hz<br/>Twelve-tone equal temperament |
+| `equal-scientific`<br/>`scientific` | Scientific (equal) | C-4 is identified to be exactly 256.0 Hz<br/>Twelve-tone equal temperament |
+| `equal-53`<br/>`53TET`<br/>`53` | 53-TET (equal) | A-4 is identified to be exactly 440.0 Hz<br/>[53 tone equal temperament](https://en.wikipedia.org/wiki/53_equal_temperament) |
+| `just-harmonic`<br/>`harmonic` | Harmonic (just) | C-4 is identified to be 261.626 Hz<br/>Twelve-tone [just intonation](https://en.wikipedia.org/wiki/Just_intonation) |
+| `just-pythagorean`<br/>`pythagorean` | Pythagorean (just) | D-4 is identified to be 288.325 Hz<br/>Twelve-tone just intonation |
 
 ## Synth Mode
 

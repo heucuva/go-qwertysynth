@@ -8,7 +8,6 @@ import (
 	"github.com/heucuva/go-qwertysynth/internal/machine"
 	"github.com/heucuva/go-qwertysynth/internal/output"
 	"github.com/heucuva/go-qwertysynth/internal/standards/note"
-	"github.com/heucuva/go-qwertysynth/internal/standards/scale"
 	"github.com/heucuva/go-qwertysynth/internal/synth"
 	"github.com/spf13/cobra"
 )
@@ -52,19 +51,21 @@ type column struct {
 type row []column
 
 func trackerGenPattern(mach machine.Machine) []row {
-	_, o := mach.Default().CenterNote().KeyOctave().Split()
+	tuning := mach.Tuning()
+	_, o := mach.BaseNote().KeyOctave().Split(tuning)
+
 	var (
-		g2 = mach.Note(o-2, scale.KeyG, 0)
-		d3 = mach.Note(o-1, scale.KeyD, 0)
-		c3 = mach.Note(o-1, scale.KeyC, 0)
-		//c4 = mach.Note(o-1, scale.KeyC, 0)
-		d4 = mach.Note(o, scale.KeyD, 0)
-		e4 = mach.Note(o, scale.KeyE, 0)
-		f4 = mach.Note(o, scale.KeyF, 0)
-		g4 = mach.Note(o, scale.KeyG, 0)
-		a4 = mach.Note(o, scale.KeyA, 0)
-		b4 = mach.Note(o, scale.KeyB, 0)
-		c5 = mach.Note(o+1, scale.KeyC, 0)
+		g2, _ = mach.ParseNote(fmt.Sprintf("G-%d", o-2))
+		d3, _ = mach.ParseNote(fmt.Sprintf("D-%d", o-1))
+		c3, _ = mach.ParseNote(fmt.Sprintf("C-%d", o-1))
+		//c4, _ = mach.ParseNote(fmt.Sprintf("C-%d", o-1))
+		d4, _ = mach.ParseNote(fmt.Sprintf("D-%d", o))
+		e4, _ = mach.ParseNote(fmt.Sprintf("E-%d", o))
+		f4, _ = mach.ParseNote(fmt.Sprintf("F-%d", o))
+		g4, _ = mach.ParseNote(fmt.Sprintf("G-%d", o))
+		a4, _ = mach.ParseNote(fmt.Sprintf("A-%d", o))
+		b4, _ = mach.ParseNote(fmt.Sprintf("B-%d", o))
+		c5, _ = mach.ParseNote(fmt.Sprintf("C-%d", o+1))
 	)
 
 	var chopsticks []row

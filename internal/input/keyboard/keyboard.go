@@ -1,19 +1,16 @@
 package keyboard
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
-	"image"
-	"log"
 	"strings"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	rkeyboard "github.com/heucuva/go-qwertysynth/internal/input/keyboard/resources/images/keyboard"
+	"github.com/heucuva/go-qwertysynth/internal/input/keyboard/keymapper"
 	"github.com/heucuva/go-qwertysynth/internal/standards/note"
 	"github.com/heucuva/go-qwertysynth/internal/standards/scale"
 	"github.com/heucuva/go-qwertysynth/internal/synth"
@@ -31,7 +28,7 @@ type Keyboard struct {
 	onTick        TickFunc
 	s             synth.Synth
 	ctx           context.Context
-	keyboardImage *ebiten.Image
+	keyMap        keymapper.KeyMapper
 }
 
 type TickFunc func(g *Keyboard, amt time.Duration) error
@@ -40,11 +37,18 @@ func NewKeyboard(ctx context.Context, s synth.Synth, onTick TickFunc, showHelp b
 	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
 	ebiten.SetWindowTitle("Keyboard (qwertysynth)")
 
-	o, _, _ := s.Default().CenterNote().Split()
+	tuning := s.Machine().Tuning()
+	_, o := tuning.BaseKey()
 
-	img, _, err := image.Decode(bytes.NewReader(rkeyboard.Keyboard_png))
-	if err != nil {
-		log.Fatal(err)
+	var keyMap keymapper.KeyMapper
+	keysPerOctave := tuning.KeysPerOctave()
+	switch keysPerOctave {
+	case 12:
+		keyMap = keymapper.Twelve
+	case 53:
+		keyMap = keymapper.FiftyThree
+	default:
+		panic("unhandled number of keys per octave")
 	}
 
 	g := &Keyboard{
@@ -53,7 +57,7 @@ func NewKeyboard(ctx context.Context, s synth.Synth, onTick TickFunc, showHelp b
 		onTick:        onTick,
 		s:             s,
 		ctx:           ctx,
-		keyboardImage: ebiten.NewImageFromImage(img),
+		keyMap:        keyMap,
 	}
 
 	if showHelp {
@@ -66,21 +70,7 @@ func NewKeyboard(ctx context.Context, s synth.Synth, onTick TickFunc, showHelp b
 }
 
 func (g Keyboard) showHelp() {
-	qRowNote := g.s.Note(g.currentOctave+1, scale.KeyC, 0)
-	fmt.Printf("Q-row starts with %v\n", qRowNote)
-
-	aRowNote := g.s.Note(g.currentOctave, scale.KeyC, 0)
-	fmt.Printf("A-row starts with %v\n", aRowNote)
-
-	zRowNote := g.s.Note(g.currentOctave-1, scale.KeyC, 0)
-	fmt.Printf("Z-row starts with %v\n", zRowNote)
-
-	fmt.Println()
-
-	fmt.Println("Hold keys to sustain notes; release them to decay them")
-	fmt.Println("Release keys while holding Shift to cut/stop them")
-	fmt.Println("PageUp to increase keyboard octave; PageDown to decrease keyboard octave")
-	fmt.Println("Note: US English keyboard layout works best")
+	g.keyMap.ShowHelp(g.currentOctave, g.s)
 
 	fmt.Println()
 
@@ -108,7 +98,7 @@ func (g *Keyboard) SetCurrentOctave(o scale.Octave) {
 		o = scale.MinOctave + 1
 	}
 	g.currentOctave = o
-	fmt.Printf("A-row octave: %d\n", g.currentOctave)
+	fmt.Printf("%s-row octave: %d\n", g.keyMap.CenterRowKey(), g.currentOctave)
 }
 
 func (Keyboard) isShiftPressed() bool {
@@ -164,19 +154,19 @@ func (g *Keyboard) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(offsetX, offsetY)
 	op.ColorM.Scale(0.5, 0.5, 0.5, 1)
-	screen.DrawImage(g.keyboardImage, op)
+	screen.DrawImage(g.keyMap.KeyboardImage(), op)
 
 	// Draw the highlighted keys.
 	op = &ebiten.DrawImageOptions{}
 	for _, p := range g.keys {
 		op.GeoM.Reset()
-		r, ok := KeyRect(p)
+		r, ok := g.keyMap.KeyRect(p)
 		if !ok {
 			continue
 		}
 		op.GeoM.Translate(float64(r.Min.X), float64(r.Min.Y))
 		op.GeoM.Translate(offsetX, offsetY)
-		screen.DrawImage(g.keyboardImage.SubImage(r).(*ebiten.Image), op)
+		screen.DrawImage(g.keyMap.KeyboardImage().SubImage(r).(*ebiten.Image), op)
 	}
 
 	keyStrs := []string{}

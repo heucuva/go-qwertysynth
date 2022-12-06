@@ -7,11 +7,11 @@ import (
 
 type Note interface {
 	Split() (scale.Octave, scale.Key, scale.Microtone)
-	KeyOctave() scale.KeyOctave
+	KeyOctave() tuning.KeyOctave
 	IsCut() bool
 	IsFadeout() bool
 	Kind() Kind
-	ToFrequency(tuning tuning.Tuning) float64
+	ToFrequency() float64
 	AddMicrotones(s scale.Microtone) Note
 }
 
@@ -19,5 +19,4 @@ var (
 	None    Note = nil
 	Cut     Note = &cut{}
 	Fadeout Note = &fadeout{}
-	Base    Note = &baseNote{}
 )

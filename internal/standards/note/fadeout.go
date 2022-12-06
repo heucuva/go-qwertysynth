@@ -8,10 +8,10 @@ import (
 type fadeout struct{}
 
 func (fadeout) Split() (scale.Octave, scale.Key, scale.Microtone) {
-	return 0, 0, 0
+	return 0, nil, 0
 }
 
-func (fadeout) KeyOctave() scale.KeyOctave {
+func (fadeout) KeyOctave() tuning.KeyOctave {
 	return 0
 }
 
@@ -27,10 +27,10 @@ func (fadeout) Kind() Kind {
 	return special
 }
 
-func (fadeout) ToFrequency(tuning tuning.Tuning) float64 {
+func (fadeout) ToFrequency() float64 {
 	return 0.0
 }
 
-func (f fadeout) AddMicrotones(s scale.Microtone) Note {
-	return f
+func (fadeout) AddMicrotones(s scale.Microtone) Note {
+	return Fadeout
 }

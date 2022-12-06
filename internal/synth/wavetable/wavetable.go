@@ -9,6 +9,6 @@ import (
 
 type WaveTable interface {
 	Get(n note.Note) voice.Voice
-	Default() machine.Default
+	Machine() machine.Machine
 	Note(o scale.Octave, k scale.Key, s scale.Microtone) note.Note
 }
